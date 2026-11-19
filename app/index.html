@@ -3,23 +3,127 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GTA VI trophy checklist</title>
-<link rel="stylesheet" href="style.css">
+<title>Leonida Platinum Roadbook v2 — GTA VI trophy guide &amp; tracker</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header>
-  <h1>GTA VI trophy checklist</h1>
-  <p id="progress">0 of 55 earned</p>
+<header class="masthead">
+  <div class="masthead-title">
+    <p class="kicker">Grand Theft Auto VI &middot; PlayStation 5 &middot; offline guide &amp; tracker</p>
+    <h1>Leonida Platinum Roadbook</h1>
+    <p class="deck">All 55 official trophies with a cited guide for each, a roadmap to the platinum with the full 100% checklist, one missable flagged — and a checklist that remembers where you stopped.</p>
+  </div>
+  <div class="masthead-stats" id="mastheadStats" aria-label="Collection summary"></div>
 </header>
-<div class="controls">
-  <label>Grade <select id="grade"><option value="all">All</option><option value="platinum">Platinum</option><option value="gold">Gold</option><option value="silver">Silver</option><option value="bronze">Bronze</option></select></label>
-  <button id="export" type="button">Export progress</button>
-  <label class="import">Import progress <input id="import" type="file" accept="application/json"></label>
-</div>
-<table>
-  <thead><tr><th>Earned</th><th>Trophy</th><th>Grade</th><th>How to get it</th></tr></thead>
-  <tbody id="rows"></tbody>
-</table>
-<script type="module" src="app.js"></script>
+
+<nav class="tabs" id="tabs" aria-label="Views">
+  <button type="button" data-view="checklist" class="tab active">Checklist</button>
+  <button type="button" data-view="roadmap" class="tab">Roadmap</button>
+  <button type="button" data-view="missables" class="tab">Missables</button>
+  <button type="button" data-view="planner" class="tab">Next up</button>
+  <button type="button" data-view="sources" class="tab">Sources</button>
+</nav>
+
+<section class="toolbar" aria-label="Filters and progress tools">
+  <label class="search">Search <input id="search" type="search" placeholder="Trophy, mission, place…" autocomplete="off"></label>
+  <div class="chips" id="kindChips" role="group" aria-label="Filter by kind">
+    <button type="button" data-kind="all" class="chip active">All 55</button>
+    <button type="button" data-kind="story" class="chip">Story</button>
+    <button type="button" data-kind="missable" class="chip">Missable</button>
+    <button type="button" data-kind="collectibles" class="chip">Collectibles</button>
+    <button type="button" data-kind="activities" class="chip">Activities</button>
+    <button type="button" data-kind="hidden" class="chip">Hidden</button>
+  </div>
+  <label class="grade">Grade
+    <select id="grade">
+      <option value="all">All grades</option>
+      <option value="platinum">Platinum</option>
+      <option value="gold">Gold</option>
+      <option value="silver">Silver</option>
+      <option value="bronze">Bronze</option>
+    </select>
+  </label>
+  <label class="spoiler"><input id="spoiler" type="checkbox"> Hide story spoilers</label>
+  <div class="tools">
+    <button id="exportBtn" type="button">Export progress</button>
+    <label class="importBtn">Import progress <input id="importFile" type="file" accept="application/json,.json"></label>
+    <button id="resetBtn" type="button" title="Clear all saved progress">Reset</button>
+  </div>
+</section>
+
+<div class="progressline" id="progressLine" aria-label="Progress"></div>
+
+<main>
+  <section id="view-checklist" class="view">
+    <div class="split">
+      <div class="listcol">
+        <p class="listhead" id="listHead"></p>
+        <ul class="trophylist" id="trophyList"></ul>
+      </div>
+      <aside class="detail" id="detailPane" aria-label="Trophy guide"></aside>
+    </div>
+    <div class="nextstrip" id="nextUpStrip" aria-label="Next up in this session"></div>
+  </section>
+
+  <section id="view-roadmap" class="view" hidden>
+    <h2>Roadmap to the platinum — about 200 hours, difficulty 4/10, 0 online</h2>
+    <p class="viewintro">Three stages, built from the official descriptions and the PowerPyx roadmap (figures cross-checked against AlcastHQ). No online trophies, no mission replay — save by hand at every chapter start. Free-roam stays open after the story, and everything on the 100% checklist is still reachable then.</p>
+    <div class="stages" id="stages"></div>
+    <h3>Story trophies by chapter — which mission, and when</h3>
+    <p class="viewintro">17 story trophies: 12 mission and chapter trophies, plus 5 contact strands that finish across the story. Chapter trophies pop as the story plays; the strands end when their last mission does.</p>
+    <table class="datatable" id="storyMap">
+      <thead><tr><th>Trophy</th><th>Mission / strand</th><th>Chapter</th><th>Stage</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <h3>Trophy needs vs. what the 100% checklist asks</h3>
+    <p class="viewintro">The trophy and the checklist do not ask for the same number — read both columns before you grind. Meditation is the odd one out: the trophy wants all 18 spots, the checklist only 15.</p>
+    <table class="datatable" id="needsTable">
+      <thead><tr><th>What</th><th>Trophy needs</th><th>100% checklist asks</th><th>Total in the game</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <h3>The 100% checklist — all 35 items (for A Long Road)</h3>
+    <p class="viewintro">The in-game checklist under Progress &gt; Stats &gt; 100% Completion, as PowerPyx and AlcastHQ list it: 12 story and task items, 20 exploration and activity items, 3 discovery items. Progress you make during the story already counts.</p>
+    <div class="hundred" id="hundred"></div>
+  </section>
+
+  <section id="view-missables" class="view" hidden>
+    <h2>Missables — one to watch, fifty-four that cannot be missed</h2>
+    <p class="viewintro">PowerPyx flags exactly one trophy as potentially missable. Everything else is safe: story missions, activities and collectibles all stay available in free-roam after the story ends, and there is no mission replay to lose.</p>
+    <div id="missableCards"></div>
+    <h3>Why the other 54 are safe</h3>
+    <p class="viewintro">Every trophy below, with the one-line reason it cannot be missed. Keep a manual save at the start of each chapter anyway — it costs nothing and covers the one trophy above.</p>
+    <table class="datatable safetable" id="safeTable">
+      <thead><tr><th>Trophy</th><th>Kind</th><th>Why it cannot be missed</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="view-planner" class="view" hidden>
+    <h2>Next up — what to do in this session</h2>
+    <p class="viewintro">Ordered by the roadmap: story first, then the open-world sweep, then the 100% clean-up. Tick trophies off as you earn them and the list re-sorts itself. Spoiler mode hides unearned story trophies here too.</p>
+    <ol class="nextup" id="nextUp"></ol>
+    <h3>Target counters (PSN counts)</h3>
+    <p class="viewintro">Tap + / − to log progress toward a counted trophy. Counters are saved with your progress and exported with it.</p>
+    <div class="counters" id="counters"></div>
+  </section>
+
+  <section id="view-sources" class="view" hidden>
+    <h2>Sources — where every fact comes from</h2>
+    <p class="viewintro">Names, descriptions and grades are PlayStation's official list as Exophase and PSNProfiles publish it. Roadmap figures, missables and the 100% requirements follow PowerPyx's GTA 6 Trophy Guide &amp; Roadmap, cross-checked against AlcastHQ — the two agree on every number used here. GTABase and Push Square confirm the list, the counts and the one missable. Guides are this roadbook's own words; each trophy names its sources beside its guide. Nothing is copied from another guide.</p>
+    <table class="datatable" id="sourcesTable">
+      <thead><tr><th>Source</th><th>What it supports in this guide</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="viewintro">This app works fully offline: it fetches nothing at run time. A source link opens only when you follow it.</p>
+  </section>
+</main>
+
+<footer>
+  <p>Names, descriptions and grades are PlayStation's official list as Exophase and PSNProfiles publish it. Guides are this roadbook's own words; each trophy names its sources. Roadmap figures (difficulty, hours, 100% counts) follow PowerPyx's GTA 6 Trophy Guide &amp; Roadmap, cross-checked against AlcastHQ. Two trophies stay labelled “not yet known” (Bad Luck, I Guess; The Truth Is Out There) — no location or step is guessed for those. Works fully offline; progress lives only in this browser (localStorage).</p>
+  <p id="demoNote" hidden>Demo seed: progress shown is seeded from the page address for screenshots, not earned play.</p>
+</footer>
+
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
